@@ -1,0 +1,21 @@
+{
+    "name": "foolz/package",
+    "type": "library",
+    "description": "A package system for managing things like plugins, in Composer format.",
+    "keywords": ["package", "composer"],
+    "homepage": "http://www.foolz.us",
+    "license": "Apache-2.0",
+    "authors": [{"name": "foolz", "email": "support@foolz.us"}],
+    "support": {
+        "email": "support@foolz.us",
+        "irc": "irc://irc.irchighway.net/fooldriver"
+    },
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Foolz\\Package": "classes/"
+        }
+    }
+}
