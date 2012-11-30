@@ -26,22 +26,6 @@ class LoaderTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($new === $new2);
 	}
 
-	public function testClassLoaderEmpty()
-	{
-		$new = Loader::forge('default');
-		// didn't add the class
-		$new->classLoader('Foolz\Fake\Fake');
-		$this->assertFalse(class_exists('Foolz\Fake\Fake'));
-	}
-
-	public function testClassLoader()
-	{
-		$new = Loader::forge('default');
-		$new->addClass('Foolz\Fake\Fake', __DIR__.'/../../tests/mock/foolz/fake/classes/Foolz/Fake/Fake.php');
-		$new->classLoader('Foolz\Fake\Fake');
-		$this->assertTrue(class_exists('Foolz\Fake\Fake'));
-	}
-
 	/**
 	 * @expectedException \DomainException
 	 */

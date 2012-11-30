@@ -42,13 +42,6 @@ class Loader
 	protected $dirs = null;
 
 	/**
-	 * The classes for the autoloader
-	 *
-	 * @var  null|array
-	 */
-	protected $classes = null;
-
-	/**
 	 * The packages found
 	 *
 	 * @var  null|array  as first key the dir name, as second key the slug
@@ -63,26 +56,24 @@ class Loader
 	protected $reload = true;
 
 	/**
-	 * Construct registers the class to the autoloader
+	 * The Composer autoloader
+	 *
+	 * @var  \Composer\Autoload\ClassLoader
 	 */
-	public function __construct()
-	{
-		$this->register();
-	}
+	protected $composer_loader = null;
 
 	/**
 	 * Creates or returns a named instance of Loader
 	 *
 	 * @param   string  $instance  The name of the instance to use or create
-	 * @param   bool    $prepend   If the autoloader should be prepended
 	 *
 	 * @return  \Foolz\Package\Loader
 	 */
-	public static function forge($instance = 'default', $prepend = false)
+	public static function forge($instance = 'default')
 	{
 		if ( ! isset(static::$instances[$instance]))
 		{
-			return static::$instances[$instance] = new static($prepend);
+			return static::$instances[$instance] = new static();
 		}
 
 		return static::$instances[$instance];
@@ -95,88 +86,7 @@ class Loader
 	 */
 	public static function destroy($instance = 'default')
 	{
-		$obj = static::$instances[$instance];
-		$obj->unregister();
 		unset(static::$instances[$instance]);
-	}
-
-	/**
-	 * Registers the current object with spl_autoload_register
-	 *
-	 * @param  bool  $prepend  if the class loader should run first, would allow overriding classes
-	 */
-	protected function register($prepend = false)
-	{
-		spl_autoload_register([$this, 'classLoader'], true, $prepend);
-	}
-
-	/**
-	 * Unregisters the current object with spl_autoload_unregister
-	 */
-	protected function unregister()
-	{
-		spl_autoload_unregister([$this, 'classLoader']);
-	}
-
-	/**
-	 * Class Autoloader function
-	 *
-	 * @param   string  $class  The name of the class to load
-	 *
-	 * @return  void|boolean  True if the class has been found, void otherwise
-	 */
-	public function classLoader($class, $psr = false)
-	{
-		if (isset($this->classes[$class]))
-		{
-			include $this->classes[$class];
-			return true;
-		}
-	}
-
-	/**
-	 * Adds a class to the autoloader
-	 *
-	 * @param   string  $class  The name of the class
-	 * @param   string  $path   The path where the class can be found
-	 *
-	 * @return  \Foolz\Package\Loader  The current object
-	 */
-	public function addClass($class, $path)
-	{
-		$this->classes[$class] = $path;
-		return $this;
-	}
-
-	/**
-	 * Returns the path of the class
-	 *
-	 * @param   string  $class  The name of the class
-	 *
-	 * @return  string  The path to the class
-	 * @throws  \OverflowException  If the class hasn't been declared
-	 */
-	public function getClassPath($class)
-	{
-		if ( ! isset($this->classes[$class]))
-		{
-			throw new \OverflowException;
-		}
-
-		return $this->classes[$class];
-	}
-
-	/**
-	 * Removes a class from the autoloader
-	 *
-	 * @param   string  $class  The class to remove
-	 *
-	 * @return  \Foolz\Package\Loader  The current object
-	 */
-	public function removeClass($class)
-	{
-		unset($this->classes[$class]);
-		return $this;
 	}
 
 	/**
@@ -251,6 +161,7 @@ class Loader
 				{
 					if ( ! isset($this->packages[$dir_name][$vendor_name.'/'.$package_name]))
 					{
+						/*  @var $package \Foolz\Package\Package */
 						$package = new $this->type_class($package_path);
 						$package->setLoader($this);
 						$package->setDirName($dir_name);

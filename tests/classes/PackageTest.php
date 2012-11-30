@@ -44,18 +44,6 @@ class PackageTest extends PHPUnit_Framework_TestCase
 		$this->assertSame(__DIR__.'/../../tests/mock/foolz/fake/', $package->getDir());
 	}
 
-	public function testAddClass()
-	{
-		$package = new Package(__DIR__.'/../../tests/mock/foolz/fake/');
-		$package->setLoader(Loader::forge());
-		$package->addClass('Foolz\Fake\Fake', __DIR__.'/../../tests/mock/foolz/fake/classes/Foolz/Fake/Fake.php');
-		$path = $package->getLoader()->getClassPath('Foolz\Fake\Fake');
-		$this->assertSame(__DIR__.'/../../tests/mock/foolz/fake/classes/Foolz/Fake/Fake.php', $path);
-
-		// clean up
-		$path = $package->getLoader()->removeClass('Foolz\Fake\Fake');
-	}
-
 	public function testGetJsonConfig()
 	{
 		$package = new Package(__DIR__.'/../../tests/mock/foolz/fake/');
@@ -138,6 +126,16 @@ class PackageTest extends PHPUnit_Framework_TestCase
 
 		$package->refreshConfig();
 		$this->assertFalse(file_exists(__DIR__.'/../../tests/mock/foolz/fake/composer.php'));
+		$this->unlinkConfig();
+	}
+
+	public function testComposerClassLoader()
+	{
+		$package = new Package(__DIR__.'/../../tests/mock/foolz/fake/');
+
+		$package->enableAutoloader();
+		$this->assertSame('I am fake.', \Foolz\Fake\Fake::fake());
+
 		$this->unlinkConfig();
 	}
 }

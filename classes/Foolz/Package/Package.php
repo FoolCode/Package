@@ -115,16 +115,21 @@ class Package
 	}
 
 	/**
-	 * Adds a class for the autoloader
-	 *
-	 * @param   string  $class
-	 * @param   string  $dir
-	 * @return  \Foolz\Package\Package
+	 * Plugs the package in the Composer autoloader
 	 */
-	public function addClass($class, $dir)
+	public function enableAutoloader()
 	{
-		$this->getLoader()->addClass($class, $dir);
-		return $this;
+		$psr = $this->getConfig('autoload.psr-0', false);
+
+		if ( ! $psr)
+		{
+			return;
+		}
+
+		foreach ($psr as $key => $item)
+		{
+			\ComposerAutoloaderInit::getLoader()->add($key, $this->getDir().$item);
+		}
 	}
 
 	/**
@@ -267,95 +272,6 @@ class Package
 	public function bootstrap()
 	{
 		include $this->getDir().'bootstrap.php';
-		return $this;
-	}
-
-	/**
-	 * Runs the execution block
-	 *
-	 * @return  \Foolz\Package\Package
-	 */
-	public function execute()
-	{
-		// clear the hook since we might have an old one
-		\Foolz\Package\Event::clear(get_class().'::execute.'.$this->getConfig('name'));
-
-		$this->bootstrap();
-		\Foolz\Package\Hook::forge(get_class().'::execute.'.$this->getConfig('name'))
-			->setObject($this)
-			->execute();
-
-		return $this;
-	}
-
-	/**
-	 * Triggers the install methods for the package
-	 *
-	 * @return  \Foolz\Package\Package
-	 */
-	public function install()
-	{
-		// clear the hook since we might have an old one
-		\Foolz\Package\Event::clear(get_class().'::install.'.$this->getJsonConfig('name'));
-
-		// execute the bootstrap to get the events instantiated
-		$this->bootstrap();
-		\Foolz\Package\Hook::forge(get_class().'::install.'.$this->getJsonConfig('name'))
-			->setObject($this)
-			->execute();
-
-		return $this;
-	}
-
-	/**
-	 * Triggers the remove methods for the package. Doesn't remove the files.
-	 *
-	 * @return  \Foolz\Package\Package
-	 */
-	public function uninstall()
-	{
-		// clear the hook since we might have an old one
-		\Foolz\Package\Event::clear(get_class().'::uninstall.'.$this->getJsonConfig('name'));
-
-		// execute the bootstrap to get the events instantiated
-		$this->bootstrap();
-		\Foolz\Package\Hook::forge(get_class().'::uninstall.'.$this->getJsonConfig('name'))
-			->setObject($this)
-			->execute();
-
-		return $this;
-	}
-
-	/**
-	 * Triggers the upgrade methods for the package. At this point the files MUST have changed.
-	 * It will give two parameters to the Event: old_revision and new_revision, which are previous and new value
-	 * for extra.revision in the composer.json. These can be used to determine which actions to undertake.
-	 *
-	 * @return  \Foolz\Package\Package
-	 */
-	public function upgrade()
-	{
-		// clear the json data so we use the latest
-		$this->clearJsonConfig();
-
-		// clear the hook since we for sure have an old one
-		\Foolz\Package\Event::clear(get_class().'::upgrade.'.$this->getJsonConfig('name'));
-
-		// execute the bootstrap to get the events re-instantiated
-		$this->bootstrap();
-
-		// run the event
-		\Foolz\Package\Hook::forge(get_class().'::upgrade.'.$this->getJsonConfig('name'))
-			->setObject($this)
-			// the PHP config holds the old revision
-			->setParam('old_revision', $this->getConfig('extra.revision', 0))
-			// the JSON config holds the new revision
-			->setParam('new_revision', $this->getJsonConfig('extra.revision', 0))
-			->execute();
-
-		// update the PHP config file so it has the new revision
-		$this->refreshConfig();
-
 		return $this;
 	}
 }
