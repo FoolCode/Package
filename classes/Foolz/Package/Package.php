@@ -128,7 +128,9 @@ class Package
 
 		foreach ($psr as $key => $item)
 		{
-			\ComposerAutoloaderInit::getLoader()->add($key, $this->getDir().$item);
+			$loader = new \Composer\Autoload\ClassLoader();
+			$loader->add($key, $this->getDir().$item);
+			$loader->register();
 		}
 	}
 
