@@ -47,6 +47,13 @@ class Package
 	protected $config = null;
 
 	/**
+	 * Remember if the plugin has been bootstrapped already
+	 *
+	 * @var boolean
+	 */
+	protected $bootstrapped = false;
+
+	/**
 	 * Sets the directory of the package
 	 *
 	 * @param  string  $dir The path to the package
@@ -55,7 +62,7 @@ class Package
 	{
 		$dir = rtrim($dir,'/').'/';
 		if ( ! file_exists($dir.'composer.json'))
-		{
+		{die($dir);
 			throw new \DomainException('Directory not found.');
 		}
 
@@ -274,6 +281,17 @@ class Package
 	public function bootstrap()
 	{
 		include $this->getDir().'bootstrap.php';
+		$this->bootstrapped = true;
 		return $this;
+	}
+
+	/**
+	 * Tells if the bootstrap file has been run at least once
+	 *
+	 * @return  boolean  True if the bootstrap file has been run, false otherwise
+	 */
+	public function isBootstrapped()
+	{
+		return $this->bootstrapped;
 	}
 }
