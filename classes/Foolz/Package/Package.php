@@ -61,7 +61,7 @@ class Package
 	public function __construct($dir)
 	{
 		$dir = rtrim($dir,'/').'/';
-		if (! file_exists($dir.'composer.json'))
+		if ( ! file_exists($dir.'composer.json'))
 		{die($dir);
 			throw new \DomainException('Directory not found.');
 		}
@@ -128,7 +128,7 @@ class Package
 	{
 		$psr = $this->getConfig('autoload.psr-0', false);
 
-		if (! $psr)
+		if ( ! $psr)
 		{
 			return;
 		}
@@ -156,7 +156,7 @@ class Package
 			$file = $this->getDir().'composer.json';
 
 			// should never happen as we check for composer.json on instantiation
-			if (! file_exists($file))
+			if ( ! file_exists($file))
 			{
 				// @codeCoverageIgnoreStart
 				throw new \DomainException;
