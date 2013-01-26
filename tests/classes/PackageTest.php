@@ -135,7 +135,14 @@ class PackageTest extends PHPUnit_Framework_TestCase
 
 		$package->enableAutoloader();
 		$this->assertSame('I am fake.', \Foolz\Fake\Fake::fake());
+		$this->unlinkConfig();
+	}
 
+	public function testIsBootstrapped()
+	{
+		$package = new Package(__DIR__.'/../../tests/mock/foolz/fake/');
+		$package->enableAutoloader();
+		$this->assertTrue($this->bootstrapped);
 		$this->unlinkConfig();
 	}
 }

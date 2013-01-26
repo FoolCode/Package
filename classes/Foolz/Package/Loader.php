@@ -71,7 +71,7 @@ class Loader
 	 */
 	public static function forge($instance = 'default')
 	{
-		if ( ! isset(static::$instances[$instance]))
+		if (! isset(static::$instances[$instance]))
 		{
 			return static::$instances[$instance] = new static();
 		}
@@ -106,7 +106,7 @@ class Loader
 			$dir = $dir_name;
 		}
 
-		if ( ! is_dir($dir))
+		if (! is_dir($dir))
 		{
 			throw new \DomainException('Directory not found.');
 		}
@@ -146,7 +146,7 @@ class Loader
 
 		foreach ($this->dirs as $dir_name => $dir)
 		{
-			if ( ! isset($this->packages[$dir_name]))
+			if (! isset($this->packages[$dir_name]))
 			{
 				$this->packages[$dir_name] = [];
 			}
@@ -159,7 +159,7 @@ class Loader
 
 				foreach ($package_paths as $package_name => $package_path)
 				{
-					if ( ! isset($this->packages[$dir_name][$vendor_name.'/'.$package_name]))
+					if (! isset($this->packages[$dir_name][$vendor_name.'/'.$package_name]))
 					{
 						/*  @var $package \Foolz\Package\Package */
 						$package = new $this->type_class($package_path);
@@ -223,7 +223,7 @@ class Loader
 			return $this->packages;
 		}
 
-		if ( ! isset($this->packages[$dir_name]))
+		if (! isset($this->packages[$dir_name]))
 		{
 			throw new \OutOfBoundsException('There is no such a directory.');
 		}
@@ -244,7 +244,7 @@ class Loader
 	{
 		$packages = $this->getAll();
 
-		if ( ! isset($packages[$dir_name][$slug]))
+		if (! isset($packages[$dir_name][$slug]))
 		{
 			throw new \OutOfBoundsException('There is no such a package.');
 		}
