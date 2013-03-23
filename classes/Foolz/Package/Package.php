@@ -57,12 +57,14 @@ class Package
 	 * Sets the directory of the package
 	 *
 	 * @param  string  $dir The path to the package
+	 *
+	 * @throws  \DomainException  When the path is not found
 	 */
 	public function __construct($dir)
 	{
 		$dir = rtrim($dir,'/').'/';
 		if ( ! file_exists($dir.'composer.json'))
-		{die($dir);
+		{
 			throw new \DomainException('Directory not found.');
 		}
 
@@ -148,6 +150,8 @@ class Package
 	 * @param   mixed   $fallback
 	 * @return  mixed
 	 * @throws  \DomainException  if there is no such config item and there was no fallback set
+	 *
+	 * @deprecated  23/03/2013  Trying to use JSON straight away
 	 */
 	public function getJsonConfig($section = null, $fallback = null)
 	{
@@ -189,6 +193,8 @@ class Package
 	 * Converts the JSON to a PHP config to improve speed
 	 *
 	 * @return  \Foolz\Package\Package
+	 *
+	 * @deprecated  23/03/2013  Trying to use JSON straight away
 	 */
 	public function jsonToConfig()
 	{
@@ -208,8 +214,12 @@ class Package
 	 */
 	public function getConfig($section = null, $fallback = null)
 	{
+
 		if ($this->config === null)
 		{
+			/*
+			 * Code to use PHP arrays as cache
+			 *
 			$php_file = $this->getDir().'composer.php';
 
 			if (file_exists($php_file) === false)
@@ -218,6 +228,9 @@ class Package
 			}
 
 			$this->config = include $php_file;
+			*/
+			
+			$this->config = json_decode(file_get_contents($this->getDir().'composer.json'), true);
 		}
 
 		if ($section === null)
@@ -255,6 +268,8 @@ class Package
 	 * Clears the json_config variable to reload from JSON
 	 *
 	 * @return  \Foolz\Package\Package
+	 *
+	 * @deprecated  23/03/2013  Trying to use JSON straight away
 	 */
 	public function clearJsonConfig()
 	{
