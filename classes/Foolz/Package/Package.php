@@ -54,6 +54,13 @@ class Package
 	protected $bootstrapped = false;
 
 	/**
+	 * Stores the asset manager for the package
+	 *
+	 * @var AssetManager|null
+	 */
+	protected $asset_manager = null;
+
+	/**
 	 * Sets the directory of the package
 	 *
 	 * @param  string  $dir The path to the package
@@ -308,6 +315,20 @@ class Package
 	public function isBootstrapped()
 	{
 		return $this->bootstrapped;
+	}
+
+	/**
+	 * Returns an AssetManager object to deal with the assets
+	 *
+	 * @return  \Foolz\Package\AssetManager  A new instance of the AssetManager
+	 */
+	public function getAssetManager()
+	{
+		if ($this->asset_manager !== null)
+		{
+			return $this->asset_manager;
+		}
+		return $this->asset_manager = new AssetManager($this);
 	}
 
 	/**
