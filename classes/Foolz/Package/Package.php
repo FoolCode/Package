@@ -229,7 +229,7 @@ class Package
 
 			$this->config = include $php_file;
 			*/
-			
+
 			$this->config = json_decode(file_get_contents($this->getDir().'composer.json'), true);
 		}
 
@@ -308,5 +308,30 @@ class Package
 	public function isBootstrapped()
 	{
 		return $this->bootstrapped;
+	}
+
+	/**
+	 * Checks for the existence of a theme to extend and returns the theme
+	 *
+	 * @return  \Foolz\Package\Package  The base theme we're extending with the current
+	 * @throws  \OutOfBoundsException   If the theme is not found or no extended theme has been specified
+	 */
+	public function getExtended()
+	{
+		$extended = $this->getConfig('extra.extends', null);
+
+		if ($extended === null)
+		{
+			throw new \OutOfBoundsException('No package to extend.');
+		}
+
+		try
+		{
+			return $this->getLoader()->get($this->getDirName(), $extended);
+		}
+		catch (\OutOfBoundsException $e)
+		{
+			throw new \OutOfBoundsException('No such package available for extension.');
+		}
 	}
 }
