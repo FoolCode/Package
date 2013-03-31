@@ -26,6 +26,13 @@ class AssetManager
 	protected $base_url = "";
 
 	/**
+	 * Check if the package extends another, avoids some file checks
+	 *
+	 * @var bool
+	 */
+	protected $does_extend = true;
+
+	/**
 	 * Create a new instance of the asset manager
 	 *
 	 * @param  \Foolz\Package\Package  $package  The reference to the package creating this asset manager
@@ -44,6 +51,17 @@ class AssetManager
 			$this->clearAssets();
 			$this->loadAssets();
 		}
+
+		try
+		{
+			$this->getPackage()->getExtended();
+			$this->does_extend = true;
+		}
+		catch (\OutOfBoundsException $e)
+		{
+			$this->does_extend = false;
+		}
+
 	}
 
 	/**
@@ -79,7 +97,7 @@ class AssetManager
 		$candidate = $this->base_url.$this->getPackage()->getConfig('name')
 			.'/assets-'.$this->getPackage()->getConfig('version').'/'.$path;
 
-		if (file_exists($this->getPublicDir().$path))
+		if ( ! $this->does_extend || file_exists($this->getPublicDir().$path))
 		{
 			return $candidate;
 		}
