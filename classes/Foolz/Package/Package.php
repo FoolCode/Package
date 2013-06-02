@@ -82,7 +82,8 @@ class Package
 	 * Sets a loader to use the relative
 	 *
 	 * @param   \Foolz\Package\Loader  $loader
-	 * @return  \Foolz\Package\Package
+	 *
+	 * @return $this
 	 */
 	public function setLoader(\Foolz\Package\Loader $loader)
 	{
@@ -98,26 +99,6 @@ class Package
 	public function getLoader()
 	{
 		return $this->loader;
-	}
-
-	/**
-	 * Sets the dir_name used in the loader to get this package
-	 *
-	 * @param  string  $dir_name
-	 */
-	public function setDirName($dir_name)
-	{
-		$this->dir_name = $dir_name;
-	}
-
-	/**
-	 * Returns the dir_name used in the loader to get this package
-	 *
-	 * @return  string
-	 */
-	public function getDirName()
-	{
-		return $this->dir_name;
 	}
 
 	/**
@@ -348,7 +329,7 @@ class Package
 
 		try
 		{
-			return $this->getLoader()->get($this->getDirName(), $extended);
+			return $this->getLoader()->get($extended);
 		}
 		catch (\OutOfBoundsException $e)
 		{

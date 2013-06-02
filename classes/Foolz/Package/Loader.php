@@ -98,39 +98,18 @@ class Loader
 	 * @return  \Foolz\Package\Loader  The current object
 	 * @throws  \DomainException      If the directory is not found
 	 */
-	public function addDir($dir_name, $dir = null)
+	public function addDir($dir = null)
 	{
-		if ($dir === null)
-		{
-			// if $dir is not specified, we use $dir_name as both $dir and $dir_name
-			$dir = $dir_name;
-		}
-
 		if ( ! is_dir($dir))
 		{
 			throw new \DomainException('Directory not found.');
 		}
 
-		$this->dirs[$dir_name] = rtrim($dir,'/').'/';
+		$this->dirs[] = rtrim($dir,'/').'/';
 
 		// set the flag to reload packages on demand
 		$this->reload = true;
 
-		return $this;
-	}
-
-	/**
-	 * Removes a dir from the array of directories to search packages in
-	 * Unsets also all the packages in that directory
-	 *
-	 * @param   string  $dir_name  The named directory
-	 *
-	 * @return  \Foolz\Package\Loader
-	 */
-	public function removeDir($dir_name)
-	{
-		unset($this->dirs[$dir_name]);
-		unset($this->packages[$dir_name]);
 		return $this;
 	}
 
@@ -144,13 +123,8 @@ class Loader
 			$this->packages = array();
 		}
 
-		foreach ($this->dirs as $dir_name => $dir)
+		foreach ($this->dirs as $dir)
 		{
-			if ( ! isset($this->packages[$dir_name]))
-			{
-				$this->packages[$dir_name] = [];
-			}
-
 			$vendor_paths = $this->findDirs($dir);
 
 			foreach ($vendor_paths as $vendor_name => $vendor_path)
@@ -159,13 +133,12 @@ class Loader
 
 				foreach ($package_paths as $package_name => $package_path)
 				{
-					if ( ! isset($this->packages[$dir_name][$vendor_name.'/'.$package_name]))
+					if ( ! isset($this->packages[$vendor_name.'/'.$package_name]))
 					{
 						/*  @var $package \Foolz\Package\Package */
 						$package = new $this->type_class($package_path);
 						$package->setLoader($this);
-						$package->setDirName($dir_name);
-						$this->packages[$dir_name][$vendor_name.'/'.$package_name] = $package;
+						$this->packages[$vendor_name.'/'.$package_name] = $package;
 					}
 				}
 			}
@@ -206,51 +179,37 @@ class Loader
 	/**
 	 * Gets all the packages or the packages from the directory
 	 *
-	 * @param   null|string  $dir_name  if specified it gets only a group of packages
-	 *
 	 * @return  \Foolz\Package\Package[]  All the packages or the packages in the directory
 	 * @throws  \OutOfBoundsException   If there isn't such a $dir_name set
 	 */
-	public function getAll($dir_name = null)
+	public function getAll()
 	{
 		if ($this->reload === true)
 		{
 			$this->find();
 		}
 
-		if ($dir_name === null)
-		{
-			return $this->packages;
-		}
-
-		if ( ! isset($this->packages[$dir_name]))
-		{
-			throw new \OutOfBoundsException('There is no such a directory.');
-		}
-
-		return $this->packages[$dir_name];
+		return $this->packages;
 	}
 
 	/**
 	 * Gets a single package object
 	 *
-	 * @param   string  $dir_name           The directory name where to find the package
 	 * @param   string  $slug               The slug of the package
 	 *
 	 * @return  \Foolz\Package\Package
 	 * @throws  \OutOfBoundsException  if the package doesn't exist
 	 */
-	public function get($dir_name, $slug)
+	public function get($slug)
 	{
 		$packages = $this->getAll();
 
-		if ( ! isset($packages[$dir_name][$slug]))
+		if ( ! isset($packages[$slug]))
 		{
 			throw new \OutOfBoundsException('There is no such a package.');
 		}
 
-		$packages[$dir_name][$slug]->setDirName($dir_name);
-		return $packages[$dir_name][$slug];
+		return $packages[$slug];
 	}
 
 	/**
