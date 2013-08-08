@@ -105,7 +105,7 @@ class Loader
 			throw new \DomainException('Directory not found.');
 		}
 
-		$this->dirs[] = rtrim($dir,'/').'/';
+		$this->dirs[] = rtrim($dir, '/');
 
 		// set the flag to reload packages on demand
 		$this->reload = true;
