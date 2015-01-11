@@ -115,9 +115,7 @@ class AssetManager
 			mkdir($this->getPublicDir(), 0777, true);
 		}
 
-		// damned copy doesn't work with directories
-		//copy($this->getPackage()->getDir().'assets', $this->getPublicDir());
-		system('cp -R '.$this->getPackage()->getDir().'assets/*'.' '.$this->getPublicDir());
+		Util::copy_recursive($this->getPackage()->getDir().'assets', rtrim($this->getPublicDir(), '/'));
 	}
 
 	/**
@@ -130,45 +128,9 @@ class AssetManager
 		// get it just right out of the assets folder
 		if (file_exists($this->public_dir.$this->getPackage()->getConfig('name')))
 		{
-			static::flushDir($this->public_dir.$this->getPackage()->getConfig('name'));
+			Util::delete_recursive($this->public_dir.$this->getPackage()->getConfig('name'));
 		}
 
 		return $this;
-	}
-
-	/**
-	 * Empties a directory
-	 *
-	 * @param  string  $path  The directory to empty
-	 */
-	protected static function flushDir($path)
-	{
-		$fp = opendir($path);
-
-		while (false !== ($file = readdir($fp)))
-		{
-			// Remove '.', '..'
-			if (in_array($file, array('.', '..')))
-			{
-				continue;
-			}
-
-			$filepath = $path.'/'.$file;
-
-			if (is_dir($filepath))
-			{
-				static::flushDir($filepath);
-
-				// removing dir here won't remove the root dir, just as we want it
-				rmdir($filepath);
-				continue;
-			}
-			elseif (is_file($filepath))
-			{
-				unlink($filepath);
-			}
-		}
-
-		closedir($fp);
 	}
 }
