@@ -13,7 +13,6 @@ use RecursiveIteratorIterator;
  */
 class Util
 {
-
 	/**
 	 * Returns the value of a deep associative array by using a dotted notation for the keys
 	 *
@@ -56,8 +55,7 @@ class Util
 	 */
 	public static function saveArrayToFile($path, $array)
 	{
-		$content = "<?php \n".
-		"return ".var_export($array, true).';';
+		$content = "<?php \n"."return ".var_export($array, true).';';
 
 		file_put_contents($path, $content);
 	}
@@ -72,7 +70,7 @@ class Util
 	 * @param string $path The path to the file/directory to delete
 	 * @return void
 	 */
-	public static function delete_recursive($path)
+	public static function delete($path)
 	{
 		if (is_dir($path)) {
 			$iterator = new RecursiveIteratorIterator(
@@ -83,15 +81,13 @@ class Util
 			foreach ($iterator as $file) {
 				if ($file->isDir()) {
 					rmdir($file->getPathname());
-				}
-				else {
+				} else {
 					unlink($file->getPathname());
 				}
 			}
 
 			rmdir($path);
-		}
-		else {
+		} else {
 			unlink($path);
 		}
 	}
@@ -101,30 +97,27 @@ class Util
 	 *
 	 * From: http://davidhancock.co/2012/11/useful-php-functions-for-dealing-with-the-file-system/
 	 *
-	 * @param string $source The path to the source file/directory
-	 * @param string $dest The path to the destination directory
+	 * @param string $src The path to the source file/directory
+	 * @param string $dst The path to the destination directory
 	 * @return void
 	 */
-	public static function copy_recursive($source, $dest)
+	public static function copy($src, $dst)
 	{
-		if (is_dir($source)) {
+		if (is_dir($src)) {
 			$iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
+				new RecursiveDirectoryIterator($src, RecursiveDirectoryIterator::SKIP_DOTS),
 				RecursiveIteratorIterator::SELF_FIRST
 			);
 
 			foreach ($iterator as $file) {
 				if ($file->isDir()) {
-					mkdir($dest.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
-				}
-				else {
-					copy($file, $dest.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
+					mkdir($dst.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
+				} else {
+					copy($file, $dst.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
 				}
 			}
-		}
-		else {
-			copy($source, $dest);
+		} else {
+			copy($src, $dst);
 		}
 	}
-
 }

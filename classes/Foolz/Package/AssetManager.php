@@ -115,7 +115,7 @@ class AssetManager
 			mkdir($this->getPublicDir(), 0777, true);
 		}
 
-		Util::copy_recursive($this->getPackage()->getDir().'assets', rtrim($this->getPublicDir(), '/'));
+		Util::copy($this->getPackage()->getDir().'assets', rtrim($this->getPublicDir(), '/'));
 	}
 
 	/**
@@ -128,7 +128,7 @@ class AssetManager
 		// get it just right out of the assets folder
 		if (file_exists($this->public_dir.$this->getPackage()->getConfig('name')))
 		{
-			Util::delete_recursive($this->public_dir.$this->getPackage()->getConfig('name'));
+			Util::delete($this->public_dir.$this->getPackage()->getConfig('name'));
 		}
 
 		return $this;
