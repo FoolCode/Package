@@ -1,6 +1,7 @@
 <?php
 
 namespace Foolz\Package;
+
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -13,111 +14,107 @@ use RecursiveIteratorIterator;
  */
 class Util
 {
-	/**
-	 * Returns the value of a deep associative array by using a dotted notation for the keys
-	 *
-	 * @param   array   $config    The config file to fetch the value from
-	 * @param   string  $section   The dotted keys: akey.anotherkey.key
-	 * @param   mixed   $fallback  The fallback value
-	 * @return  mixed
-	 * @throws  \DomainException  if the fallback is \Foolz\Package\Void
-	 */
-	public static function dottedConfig($config, $section, $fallback)
-	{
-		// get the section with the dot separated string
-		$sections = explode('.', $section);
-		$current = $config;
-		foreach ($sections as $key)
-		{
-			if (isset($current[$key]))
-			{
-				$current = $current[$key];
-			}
-			else
-			{
-				if ($fallback instanceof Void)
-				{
-					throw new \DomainException;
-				}
+    /**
+     * Returns the value of a deep associative array by using a dotted notation for the keys
+     *
+     * @param   array   $config    The config file to fetch the value from
+     * @param   string  $section   The dotted keys: akey.anotherkey.key
+     * @param   mixed   $fallback  The fallback value
+     * @return  mixed
+     * @throws  \DomainException  if the fallback is \Foolz\Package\Void
+     */
+    public static function dottedConfig($config, $section, $fallback)
+    {
+        // get the section with the dot separated string
+        $sections = explode('.', $section);
+        $current = $config;
 
-				return $fallback;
-			}
-		}
+        foreach ($sections as $key) {
+            if (isset($current[$key])) {
+                $current = $current[$key];
+            } else {
+                if ($fallback instanceof Void) {
+                    throw new \DomainException;
+                }
 
-		return $current;
-	}
+                return $fallback;
+            }
+        }
 
-	/**
-	 * Saves an array to a PHP file with a return statement
-	 *
-	 * @param   string  $path   The target path
-	 * @param   array   $array  The array to save
-	 */
-	public static function saveArrayToFile($path, $array)
-	{
-		$content = "<?php \n"."return ".var_export($array, true).';';
+        return $current;
+    }
 
-		file_put_contents($path, $content);
-	}
+    /**
+     * Saves an array to a PHP file with a return statement
+     *
+     * @param   string  $path   The target path
+     * @param   array   $array  The array to save
+     */
+    public static function saveArrayToFile($path, $array)
+    {
+        $content = "<?php \n"."return ".var_export($array, true).';';
 
-	/**
-	 * Delete a file/recursively delete a directory
-	 *
-	 * NOTE: Be very careful with the path you pass to this!
-	 *
-	 * From: http://davidhancock.co/2012/11/useful-php-functions-for-dealing-with-the-file-system/
-	 *
-	 * @param string $path The path to the file/directory to delete
-	 * @return void
-	 */
-	public static function delete($path)
-	{
-		if (is_dir($path)) {
-			$iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
-				RecursiveIteratorIterator::CHILD_FIRST
-			);
+        file_put_contents($path, $content);
+    }
 
-			foreach ($iterator as $file) {
-				if ($file->isDir()) {
-					rmdir($file->getPathname());
-				} else {
-					unlink($file->getPathname());
-				}
-			}
+    /**
+     * Delete a file/recursively delete a directory
+     *
+     * NOTE: Be very careful with the path you pass to this!
+     *
+     * From: http://davidhancock.co/2012/11/useful-php-functions-for-dealing-with-the-file-system/
+     *
+     * @param string $path The path to the file/directory to delete
+     * @return void
+     */
+    public static function delete($path)
+    {
+        if (is_dir($path)) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::CHILD_FIRST
+            );
 
-			rmdir($path);
-		} else {
-			unlink($path);
-		}
-	}
+            foreach ($iterator as $file) {
+                if ($file->isDir()) {
+                    rmdir($file->getPathname());
+                } else {
+                    unlink($file->getPathname());
+                }
+            }
 
-	/**
-	 * Copy a file or recursively copy a directories contents
-	 *
-	 * From: http://davidhancock.co/2012/11/useful-php-functions-for-dealing-with-the-file-system/
-	 *
-	 * @param string $src The path to the source file/directory
-	 * @param string $dst The path to the destination directory
-	 * @return void
-	 */
-	public static function copy($src, $dst)
-	{
-		if (is_dir($src)) {
-			$iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($src, RecursiveDirectoryIterator::SKIP_DOTS),
-				RecursiveIteratorIterator::SELF_FIRST
-			);
+            rmdir($path);
+        } else {
+            unlink($path);
+        }
+    }
 
-			foreach ($iterator as $file) {
-				if ($file->isDir()) {
-					mkdir($dst.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
-				} else {
-					copy($file, $dst.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
-				}
-			}
-		} else {
-			copy($src, $dst);
-		}
-	}
+    /**
+     * Copy a file or recursively copy a directories contents
+     *
+     * From: http://davidhancock.co/2012/11/useful-php-functions-for-dealing-with-the-file-system/
+     *
+     * @param string $src The path to the source file/directory
+     * @param string $dst The path to the destination directory
+     * @return void
+     */
+    public static function copy($src, $dst)
+    {
+        if (is_dir($src)) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($src, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($iterator as $file) {
+                if ($file->isDir()) {
+                    mkdir($dst.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
+                } else {
+                    copy($file, $dst.DIRECTORY_SEPARATOR.$iterator->getSubPathName());
+                }
+            }
+        } else {
+            copy($src, $dst);
+        }
+    }
 }
