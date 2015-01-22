@@ -69,7 +69,8 @@ class Package
      */
     public function __construct($dir)
     {
-        $dir = rtrim($dir,'/').'/';
+        $dir = rtrim($dir, '/').'/';
+
         if (!file_exists($dir.'composer.json')) {
             throw new \DomainException('Directory not found.');
         }

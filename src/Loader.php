@@ -103,10 +103,7 @@ class Loader
             throw new \DomainException('Directory not found.');
         }
 
-        $this->dirs[] = rtrim($dir, '/');
-
-        // set the flag to reload packages on demand
-        $this->reload = true;
+        $this->dirs[] = ['path' => rtrim($dir, '/'), 'loaded' => false];
 
         return $this;
     }
@@ -120,21 +117,24 @@ class Loader
             $this->packages = array();
         }
 
-        foreach ($this->dirs as $dir) {
-            $vendor_paths = $this->findDirs($dir);
+        foreach ($this->dirs as $pack => $dir) {
+            if ($dir['loaded'] === false) {
+                $vendors = $this->findDirs($dir['path']);
 
-            foreach ($vendor_paths as $vendor_name => $vendor_path) {
-                $package_paths = $this->findDirs($vendor_path);
+                foreach ($vendors as $vendor_name => $vendor_path) {
+                    $packages = $this->findDirs($vendor_path);
 
-                foreach ($package_paths as $package_name => $package_path) {
-                    if (!isset($this->packages[$vendor_name.'/'.$package_name])) {
-                        /*  @var $package \Foolz\Package\Package */
-                        $package = new $this->type_class($package_path);
-                        $package->setLoader($this);
+                    foreach ($packages as $package_name => $package_path) {
+                        if (!isset($this->packages[$vendor_name.'/'.$package_name])) {
+                            $package = new $this->type_class($package_path);
+                            $package->setLoader($this);
 
-                        $this->packages[$vendor_name.'/'.$package_name] = $package;
+                            $this->packages[$vendor_name.'/'.$package_name] = $package;
+                        }
                     }
                 }
+
+                $this->dirs[$pack]['loaded'] = true;
             }
         }
     }
@@ -175,9 +175,7 @@ class Loader
      */
     public function getAll()
     {
-        if ($this->reload === true) {
-            $this->find();
-        }
+        $this->find();
 
         return $this->packages;
     }
@@ -257,5 +255,19 @@ class Loader
         }
 
         return $this->base_url;
+    }
+
+    /**
+     * @return \Foolz\Theme\Loader
+     */
+    public function reload()
+    {
+        foreach ($this->dirs as $pack => $dir) {
+            $this->dirs[$pack]['loaded'] = false;
+        }
+
+        $this->packages = array();
+
+        return $this;
     }
 }
