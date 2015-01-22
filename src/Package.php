@@ -119,8 +119,8 @@ class Package
         $psr0 = $this->getConfig('autoload.psr-0', []);
         $psr4 = $this->getConfig('autoload.psr-4', []);
 
-        if (!empty($psr0) && !empty($psr4)) {
-            $loader = new \Composer\Autload\ClassLoader();
+        if (!empty($psr0) || !empty($psr4)) {
+            $loader = new \Composer\Autoload\ClassLoader();
 
             // load psr-0
             foreach ($psr0 as $namespace => $path) {
